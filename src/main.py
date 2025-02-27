@@ -1,12 +1,28 @@
-from src.router import route_query
+from router import Router
 
-def main():
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() in ["exit", "quit"]:
-            break
-        response = route_query(user_input)
-        print(f"Bot: {response}")
+class Chatbot:
+    def __init__(self):
+        self.router = Router()
+        self.conversation_history = []
+
+    def add_message(self, role, content):
+        """Stores conversation history."""
+        self.conversation_history.append({"role": role, "content": content})
+
+    def chat(self):
+        """Main chat loop."""
+        while True:
+            user_input = input("You: ")
+            if user_input.lower() in ["exit", "quit"]:
+                self.router.orin.server_manager.stop_server()
+                break
+
+            self.add_message("user", user_input)
+            response = self.router.route_query(self.conversation_history)
+            self.add_message("assistant", response)
+
+            print(f"Bot: {response}")
 
 if __name__ == "__main__":
-    main()
+    chatbot = Chatbot()
+    chatbot.chat()

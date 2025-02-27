@@ -1,7 +1,7 @@
-import subprocess
-import requests
-import pexpect
+import json
 import time
+import requests
+from models.server_manager import ServerManager
 
 orin_ip = "10.96.184.122"  
 local_port = 5000 
@@ -9,63 +9,40 @@ orin_port = 5000
 ssh_user = "orin" 
 ssh_port = 30006
 
-def start_orin_server():
-    """Starts an SSH tunnel, activates virtualenv, and starts Flask on Orin."""
+class Orin: 
+    def __init__(self):
+            self.server_manager = ServerManager(orin_ip, orin_port, local_port, ssh_user, ssh_port) 
+            
+    def process(self, query):
+        """Routes a query to the Orin API."""
+        if not self.server_manager.is_server_running():
+            print("server is not running")
+            self.server_manager.start_server()
 
-    ssh_cmd = f"ssh {ssh_user}@{orin_ip} -p {ssh_port}"
-    tunnel_cmd = f"ssh -fN -L {local_port}:localhost:{orin_port} {ssh_user}@{orin_ip} -p {ssh_port}"
+        url = f"http://localhost:{self.server_manager.local_port}/query"
+        payload = {"query": query}
+        print(payload)
 
-    print("Starting SSH connection to setup Flask server...")
-
-    # Start SSH session with pexpect
-    child = pexpect.spawn(ssh_cmd, encoding='utf-8', timeout=None)
-
-    # Activate virtual environment
-    child.sendline("source murong/venv/bin/activate")
-    time.sleep(1) 
-
-    # Start Flask server in the background
-    child.sendline("nohup python3 murong/api.py > flask.log 2>&1 &")
-    time.sleep(2) 
-
-    # Close the SSH session properly
-    child.sendline("exit")
-    child.close()
-
-    # Start SSH tunnel in background
-    tunnel_process = subprocess.Popen(
-        tunnel_cmd,
-        shell=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
-    )
-
-    print("SSH tunnel established, and Flask server is running in the background.")
-
-    return tunnel_process
-
-
-def query_orin(prompt):
-    """Sends a query to the Orin API server."""
-    ssh_tunnel = start_orin_server() 
-    time.sleep(3) # Wait for the tunnel to be established
-    url = f"http://localhost:{local_port}/query"  # Use localhost since the tunnel forwards to Orin
-    payload = {
-        "model": "llama3", 
-        "query": prompt
-    }
+        try:
+            response = requests.post(url, json=payload)
+            print(f"Response status: {response.status_code}, Response text: {response.text}")
+            return response.json() if response.text else {"error": "Empty response"}
+        except Exception as e:
+            return {"error": f"Request failed: {str(e)}"}
     
-    try:
-        response = requests.post(url, json=payload)
-        
-        if not response.text:
-            return {"error": "Empty response from Orin API"}
-        return response.json()
-    except requests.exceptions.ConnectionError:
-        return {"error": "Could not connect to Orin API"}
+    
 
-
-if __name__ == "__main__":
-    response = query_orin("Hello, Orin!")
-    print(response)
+# if __name__ == "__main__":
+#     query = [{"role": "user", "content": "tell me about singapore in 20 words"},
+#     {"role": "assistant", "content": "Singapore is a small island nation with a rich cultural heritage, vibrant city-state and cosmopolitan lifestyle."},
+#     {"role": "user", "content": "how small is it?"}]
+#     orin = Orin()
+    
+#     # orin.server_manager.start_server()
+#     # query = "tell me about singapore in 20 words"
+#     # print(orin.process(query))
+#     # response = orin.process(json.dumps(query))
+#     # print(response)
+#     orin.server_manager.stop_server()
+    
     

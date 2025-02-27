@@ -1,5 +1,18 @@
 import subprocess
 
-def query_nano(prompt):
-    result = subprocess.run(["ollama", "run", "tinyllama"], input=prompt.encode(), capture_output=True)
-    return result.stdout.decode().strip()
+class Nano:
+    def __init__(self):
+        self.model_name = "ollama/tinyllama" 
+            
+    def process(self, query):
+        formatted_query = "\n".join(
+            [f"{msg['role']}: {msg['content']}" for msg in query]
+        )
+        
+        result = subprocess.run(
+            ["ollama", "run", "tinyllama", formatted_query],
+            input= "",
+            capture_output=True,
+            text=True
+        )
+        return result.stdout

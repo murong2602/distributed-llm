@@ -1,12 +1,21 @@
-from token_counter import count_tokens
-from models.nano import query_nano
-from models.orin import query_orin
+from token_counter import TokenCounter
+from models.orin import Orin
+from models.nano import Nano
 
-TOKEN_THRESHOLD = 100  # Example threshold
+class Router:
+    def __init__(self):
+        self.token_counter = TokenCounter()
+        self.orin = Orin()
+        self.nano = Nano()
 
-def route_query(user_input):
-    token_count = count_tokens(user_input)
-    if token_count <= TOKEN_THRESHOLD:
-        return query_nano(user_input)
-    else:
-        return query_orin(user_input)
+    def route_query(self, conversation_history):
+        """Decides whether to process the query on Orin or Nano."""
+        context = conversation_history[-5:]
+        context_size = self.token_counter.get_context_size(context)
+
+        print("context size", context_size)
+
+        if context_size > 100:
+            return self.orin.process(context)
+        else:
+            return self.nano.process(context)
