@@ -16,3 +16,4 @@ class Nano:
             text=True
         )
         return result.stdout
+        # return "Singapore is a vibrant city-state in Southeast Asia known for its modern skyline, efficient infrastructure, and multicultural society. Despite its small size, it has become a global financial hub, attracting businesses and talent from around the world. "
