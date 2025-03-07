@@ -35,7 +35,7 @@ def process_query():
     )
     
     result = subprocess.run(
-        ["ollama", "run", "tinyllama", formatted_query],
+        ["ollama", "run", "phi3", formatted_query],
         input= "",
         capture_output=True,
         text=True
