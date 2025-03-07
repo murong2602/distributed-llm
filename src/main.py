@@ -15,6 +15,7 @@ class Chatbot:
             user_input = input("You: ")
             if user_input.lower() in ["exit", "quit"]:
                 self.router.orin.server_manager.stop_server()
+                self.router.nano.server_manager.stop_server()
                 break
 
             self.add_message("user", user_input)

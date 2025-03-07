@@ -25,7 +25,6 @@ class Orin:
 
         try:
             response = requests.post(url, json=payload)
-            print(f"Response status: {response.status_code}, Response text: {response.text}")
             return response.json() if response.text else {"error": "Empty response"}
         except Exception as e:
             return {"error": f"Request failed: {str(e)}"}
@@ -33,9 +32,9 @@ class Orin:
     
 
 # if __name__ == "__main__":
-#     query = [{"role": "user", "content": "tell me about singapore in 20 words"},
-#     {"role": "assistant", "content": "Singapore is a small island nation with a rich cultural heritage, vibrant city-state and cosmopolitan lifestyle."},
-#     {"role": "user", "content": "how small is it?"}]
+#     query = [
+#               {"role": "user", "content": "tell me about singapore in 20 words"}, {"role": "assistant", "content": "Singapore is a small island nation with a rich cultural heritage, vibrant city-state and cosmopolitan lifestyle."},{"role": "user", "content": "how small is it?"}
+#                ]
 #     orin = Orin()
     
 #     # orin.server_manager.start_server()

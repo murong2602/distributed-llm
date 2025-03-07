@@ -6,18 +6,18 @@ import subprocess
 
 
 class ServerManager:
-    def __init__(self, orin_ip, orin_port, local_port, ssh_user, ssh_port):
+    def __init__(self, device_ip, device_port, local_port, ssh_user, ssh_port):
         self.ssh_user = ssh_user
-        self.orin_ip = orin_ip
+        self.device_ip = device_ip
         self.local_port = local_port
-        self.orin_port = orin_port
+        self.device_port = device_port
         self.ssh_port = ssh_port
         self.ssh_tunnel = None
 
     def start_server(self):
-        """Starts an SSH tunnel, activates virtualenv, and starts Flask on Orin."""
-        ssh_cmd = f"ssh {self.ssh_user}@{self.orin_ip} -p {self.ssh_port}"
-        tunnel_cmd = f"ssh -fN -L {self.local_port}:localhost:{self.orin_port} {self.ssh_user}@{self.orin_ip} -p {self.ssh_port}"
+        """Starts an SSH tunnel, activates virtualenv, and starts Flask on device."""
+        ssh_cmd = f"ssh {self.ssh_user}@{self.device_ip} -p {self.ssh_port}"
+        tunnel_cmd = f"ssh -fN -L {self.local_port}:localhost:{self.device_port} {self.ssh_user}@{self.device_ip} -p {self.ssh_port}"
 
         try:
             # Start SSH session with pexpect
@@ -72,7 +72,7 @@ class ServerManager:
         try:
             # First check if server process exists
             check_cmd = (
-                f"ssh {self.ssh_user}@{self.orin_ip} -p {self.ssh_port} "
+                f"ssh {self.ssh_user}@{self.device_ip} -p {self.ssh_port} "
                 "'pgrep -f \"python3 -u api.py\"'"
             )
             result = subprocess.run(
@@ -87,7 +87,7 @@ class ServerManager:
                 print(f"Found running server with PIDs: {result.stdout.strip()}")
                 # Now kill it gently
                 kill_cmd = (
-                    f"ssh {self.ssh_user}@{self.orin_ip} -p {self.ssh_port} "
+                    f"ssh {self.ssh_user}@{self.device_ip} -p {self.ssh_port} "
                     "'pkill -f \"python3 -u api.py\"'"
                 )
                 kill_result = subprocess.run(
@@ -105,7 +105,7 @@ class ServerManager:
 
             # Kill tunnel process using specific port pattern
             tunnel_kill = subprocess.run(
-                f"pkill -f '{self.local_port}:localhost:{self.orin_port}'",
+                f"pkill -f '{self.local_port}:localhost:{self.device_port}'",
                 shell=True
             )
             
