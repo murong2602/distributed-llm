@@ -22,7 +22,7 @@ class Chatbot:
             response = self.router.route_query(self.conversation_history)
             self.add_message("assistant", response)
 
-            print(f"Bot: {response}")
+            print(f"Assistant: {response.get('response', 'No response available')}")
 
 if __name__ == "__main__":
     chatbot = Chatbot()

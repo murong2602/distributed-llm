@@ -15,7 +15,7 @@ class ServerManager:
         self.ssh_tunnel = None
 
     def start_server(self):
-        """Starts an SSH tunnel, activates virtualenv, and starts Flask on device."""
+        """Starts an SSH tunnel, activates virtualenv, and starts Flask api on device."""
         ssh_cmd = f"ssh {self.ssh_user}@{self.device_ip} -p {self.ssh_port}"
         tunnel_cmd = f"ssh -fN -L {self.local_port}:localhost:{self.device_port} {self.ssh_user}@{self.device_ip} -p {self.ssh_port}"
 
@@ -24,7 +24,7 @@ class ServerManager:
             child = pexpect.spawn(ssh_cmd, encoding='utf-8', timeout=30)
             
             # Wait for shell prompt
-            child.expect(r'\$')  # Wait for default shell prompt
+            child.expect(r'\$') 
             
             # Change directory
             child.sendline("cd murong")
@@ -32,7 +32,7 @@ class ServerManager:
             
             # Activate virtual environment
             child.sendline("source venv/bin/activate")
-            child.expect(r'\(venv\)')  # Wait for virtualenv prompt
+            child.expect(r'\(venv\)') 
             
             # Start Flask server with proper nohup
             child.sendline("nohup python3 -u api.py > flask.log 2>&1 &")
@@ -42,7 +42,7 @@ class ServerManager:
             child.sendline("pgrep -f 'python3 api.py'")
             child.expect(r'\d+')  # Look for process ID
             pid = child.match.group(0)
-            print(f"Found running server with PID: {pid}")
+            print(f"Server PID: {pid}")
             
             # Clean exit
             child.sendline("exit")
@@ -84,7 +84,7 @@ class ServerManager:
 
             # If process exists (pgrep found something)
             if result.returncode == 0:
-                print(f"Found running server with PIDs: {result.stdout.strip()}")
+                print(f"Found running server with PID: {result.stdout.strip()}")
                 # Now kill it gently
                 kill_cmd = (
                     f"ssh {self.ssh_user}@{self.device_ip} -p {self.ssh_port} "
@@ -100,6 +100,8 @@ class ServerManager:
                 if kill_result.returncode != 0:
                     print(f"Warning: Kill command exited with {kill_result.returncode}")
                     print(f"Stderr: {kill_result.stderr.strip()}")
+                else: 
+                    print("Server process killed successfully")
             else:
                 print("No running server process found")
 

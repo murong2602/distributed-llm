@@ -12,10 +12,3 @@ class TokenCounter:
         return sum(self.count_tokens(msg) for msg in context)
 
 
-
-# if __name__ == "__main__":
-#     counter = TokenCounter()
-#     conversation_history = [{"role": "user", "content": "tell me about singapore in 20 words"},
-#     {"role": "assistant", "content": "Singapore is a small island nation with a rich cultural heritage, vibrant city-state and cosmopolitan lifestyle."},
-#     {"role": "user", "content": "how small is it?"}]
-#     print(counter.get_context_size(conversation_history))

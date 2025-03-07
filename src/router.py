@@ -13,9 +13,10 @@ class Router:
         context = conversation_history[-5:]
         context_size = self.token_counter.get_context_size(context)
 
-        print("context size", context_size)
+        print("Context size = ", context_size, "tokens")
 
         if context_size > 100:
+            print("Context size too large, routing to Orin...")
             return self.orin.process(context)
         else:
             return self.nano.process(context)

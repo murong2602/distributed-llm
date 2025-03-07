@@ -16,12 +16,11 @@ class Orin:
     def process(self, query):
         """Routes a query to the Orin API."""
         if not self.server_manager.is_server_running():
-            print("server is not running")
+            print("No running Orin server found, starting...")
             self.server_manager.start_server()
 
         url = f"http://localhost:{self.server_manager.local_port}/query"
         payload = {"query": query}
-        print(payload)
 
         try:
             response = requests.post(url, json=payload)

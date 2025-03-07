@@ -1,7 +1,7 @@
 import requests
 from models.server_manager import ServerManager
 
-nano_ip = "192.168.1.87"  
+nano_ip = "192.168.1.83"  
 local_port = 5001 
 nano_port = 5001
 ssh_user = "nano" 
@@ -14,17 +14,15 @@ class Nano:
     def process(self, query):
         """Routes a query to the nano API."""
         if not self.server_manager.is_server_running():
-            print("server is not running")
+            print("No running Nano server found, starting...")
             self.server_manager.start_server()
 
 
         url = f"http://localhost:{self.server_manager.local_port}/query"
         payload = {"query": query}
-        print(payload)
 
         try:
             response = requests.post(url, json=payload)
-            print(f"Response status: {response.status_code}, Response text: {response.text}")
             return response.json() if response.text else {"error": "Empty response"}
         except Exception as e:
             return {"error": f"Request failed: {str(e)}"}
