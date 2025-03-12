@@ -1,7 +1,8 @@
 import requests
 from models.server_manager import ServerManager
 
-nano_ip = "192.168.1.83"  
+# home: 192.168.1.83
+nano_ip = "172.20.238.177"  
 local_port = 5001 
 nano_port = 5001
 ssh_user = "nano" 

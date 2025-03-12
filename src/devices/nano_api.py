@@ -52,10 +52,3 @@ def process_query():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
 
-
-# result = subprocess.run(
-#         f"echo {shlex.quote(query)} | ollama run llama3",
-#         shell=True,
-#         capture_output=True,
-#         text=True
-#     )
