@@ -217,7 +217,11 @@ class ChatbotTester:
 
             # Filter power readings within the query's time range
             relevant_powers = [p for t, p in power_data.items() if start_time <= t <= end_time]
+            # print_powers = [(t,p) for t, p in power_data.items() if start_time <= t <= end_time]
             print('\n relevent powers:', relevant_powers)
+            # print("\nRelevant power readings (timestamp, power):")
+            # for t, p in print_powers:
+            #     print(f"{t}: {p}")
             
             # Based on trapezoidal rule for numerical integration
             energy = sum(relevant_powers)  # mili Joules 
@@ -231,13 +235,22 @@ class ChatbotTester:
 
         for threshold, device, start_time, end_time, energy, latency in query_results:
             if threshold not in results:
-                results[threshold] = {"nano": [0, 0], "orin": [0, 0]}  # [latency, energy]
+                results[threshold] = {"nano": [0, 0, 0], "orin": [0, 0, 0]}  # [latency, energy, avg power]
 
             if device in results[threshold]:
-                results[threshold][device][0] += latency
-                results[threshold][device][1] += energy
+                results[threshold][device][0] += latency  # Total Latency
+                results[threshold][device][1] += energy   # Total Energy
 
-        return results
+        # Compute Average Power (mW) = Total Energy (mJ) / Total Latency (ms)
+        for threshold in results:
+            for device in ["nano", "orin"]:
+                total_latency = results[threshold][device][0]
+                total_energy = results[threshold][device][1]
+                avg_power = (total_energy / total_latency) if total_latency > 0 else 0  # in W
+                results[threshold][device][2] = round(avg_power, 3)  # Store rounded average power
+
+        return results 
+
     
     
     def save_results(self, results, query_set_name, output_file="final_results.csv"):
@@ -256,24 +269,25 @@ class ChatbotTester:
             # Write header if file is newly created
             if not file_exists:
                 writer.writerow(["Query Set", "Context Threshold",
-                                "Nano Latency (ms)", "Nano Energy (mJ)", 
-                                "Orin Latency (ms)", "Orin Energy (mJ)"])
+                                "Nano Latency (ms)", "Nano Energy (mJ)", "Nano Avg Power (W)"
+                                "Orin Latency (ms)", "Orin Energy (mJ)", "Orin Avg Power (W)"])
 
             # Write results for each threshold
             for threshold, device_results in results.items():
                 print(f"Results for threshold {threshold}: {device_results}")
                 writer.writerow([
                     query_set_name, threshold,
-                    device_results["nano"][0], device_results["nano"][1],
-                    device_results["orin"][0], device_results["orin"][1]
+                    device_results["nano"][0], device_results["nano"][1], device_results["nano"][2], # Latency, Energy, Avg Power
+                    device_results["orin"][0], device_results["orin"][1], device_results["orin"][2]  
                 ])
+
 
         print(f"Final results saved to {output_file}")
 
             
 # PYTHONPATH=src python3 src/tests/chatbot_tester.py
 if __name__ == "__main__":
-    tester = ChatbotTester(query_sets["general_knowledge"][:2], [50, 200], "172.20.238.177", "10.96.184.122")
+    tester = ChatbotTester(query_sets["general_knowledge"], [2000, 4000], "192.168.1.84", "10.96.184.122")
 
     # start logging on both devices
     tester.start_logging("nano")

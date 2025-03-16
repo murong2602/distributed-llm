@@ -1,15 +1,20 @@
 query_sets = {
     "general_knowledge": [
-        "Explain the Big Bang theory in simple terms.",
-        "Now go into more detail, covering cosmic inflation and the formation of galaxies.",
-        "Compare and contrast Newtonian mechanics and general relativity.",
-        "Summarize the Industrial Revolution in under 300 words.",
+        # Simple, shorter queries (Nano-friendly)
         "List the top five most significant scientific discoveries in the last 50 years and explain their impact.",
-        "Describe the history and evolution of artificial intelligence.",
-        "Generate a mock debate transcript between two scientists arguing for and against AI regulation.",
-        "Expand on the AI regulation debate by adding an audience Q&A session.",
+        "Explain very simply what happened during the Industrial Revolution.",
+        "Briefly explain what artificial intelligence is.",
+        "List 3 differences between Newtonian mechanics and general relativity.",  
+
+        # Slightly more detailed but still manageable  
+        "Explain the Big Bang theory in simple terms.",
+        "Now go into more detail covering the formation of galaxies.",  
+
+        # Long-form, structured outputs (More suitable for Orin)  
+        "Generate a mock debate transcript for a scientist arguing against AI regulation.",
+        "Expand on the AI regulation debate by adding a POV for AI regulation.",
         "Summarize everything we've discussed so far in one comprehensive report.",
-        "Using all the context above, predict the future of AI in the next 50 years and justify your reasoning."
+        "Using all the context above, predict the future of AI in the next 50 years."
     ],
     "technical_coding": [
         "Explain the fundamentals of dynamic programming with an example.",

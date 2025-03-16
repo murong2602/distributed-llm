@@ -1,0 +1,4 @@
+Query Set,Context Threshold,Nano Latency (ms),Nano Energy (mJ),Orin Latency (ms),Orin Energy (mJ)
+
+general_knowledge,512,832798,4567958,156260,2864684
+general_knowledge,1000,1302312,7231797,168569,4785030

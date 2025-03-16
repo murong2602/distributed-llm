@@ -17,7 +17,7 @@ class Router:
 
     def route_query(self, conversation_history):
         """Decides whether to process the query on Orin or Nano."""
-        context = conversation_history[-5:]
+        context = conversation_history
         context_size = self.token_counter.get_context_size(context)
 
         print("Context size = ", context_size, "tokens")
