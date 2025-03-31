@@ -19,10 +19,10 @@ class Chatbot:
                 break
 
             self.add_message("user", user_input)
-            response = self.router.route_query(self.conversation_history)
+            response, num_tokens, _ = self.router.route_query(self.conversation_history)
             self.add_message("assistant", response)
 
-            print(f"Assistant: {response.get('response', 'No response available')}")
+            print(f"Assistant: {response.get('response', 'No response available')}", num_tokens)
 
 if __name__ == "__main__":
     chatbot = Chatbot()

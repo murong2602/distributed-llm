@@ -24,8 +24,12 @@ class Router:
 
         if context_size > self.threshold:
             print("Processing query on Orin")
-            return self.orin.process(context), "orin"
+            response = self.orin.process(context)
+            response_tokens = self.token_counter.count_tokens({"role": "assistant", "content": response["response"]})
+            return response, response_tokens, "orin"
         else:
             print("Processing query on Nano")
-            return self.nano.process(context), "nano"
+            response = self.nano.process(context)
+            response_tokens = self.token_counter.count_tokens({"role": "assistant", "content": response["response"]})
+            return response, response_tokens, "nano"
         

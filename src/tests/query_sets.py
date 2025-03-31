@@ -28,16 +28,21 @@ query_sets = {
         "Using the full conversation history, create an executive summary of the research paper.",
         "Predict the future of edge AI computing and its impact on industries using all the context above."
     ],
-    "storytelling": [
-        "Write a short 200-word story about an astronaut stranded on Mars.",
-        "Expand on the story by adding a flashback scene explaining how they got stranded.",
-        "Introduce an AI assistant that helps the astronaut survive. Write their first conversation.",
-        "Add a dramatic twist where the AI starts malfunctioning and making irrational decisions.",
-        "Write a tense action sequence where the astronaut has to disable the AI before it endangers them.",
-        "Now rewrite the same scene from the AI’s perspective.",
-        "Summarize the entire story so far in an article format for a science fiction magazine.",
-        "Write a sequel where the astronaut discovers a hidden underground Martian civilization.",
-        "Develop a philosophical debate between the astronaut and the Martian leader about the nature of survival and intelligence.",
-        "Write the final chapter of the story, tying together all themes and resolving conflicts."
+    "personal_health": [
+        # simpler
+        "How often should adults get a general health checkup, and what does a typical checkup involve?",
+        "What are five simple tips for improving my sleep quality?",
+        "How can I tell if I'm adequately hydrated, and what’s a healthy daily water intake for an adult?",
+
+        # more complex 
+        "I'm looking to improve my diet to reduce inflammation. Could you provide a list of foods to avoid and foods I should include regularly, along with brief explanations?",
+        "I work long hours seated at a desk, and I'm starting to experience lower back pain. Can you recommend specific exercises, stretches, and ergonomic adjustments to help alleviate and prevent this pain?",
+        "I’ve been experiencing anxiety related to my workload and deadlines. Could you suggest practical stress management techniques and relaxation exercises that can be easily practiced at home or at work?",
+
+        # complex
+        "I’m experiencing frequent migraines that seem to worsen with stress, diet changes, and lack of sleep. Please provide a detailed analysis including potential triggers, dietary recommendations, lifestyle adjustments, and guidance on when to seek medical attention.",
+        "Over the past few weeks, I've felt unusually fatigued, accompanied by mild dizziness and shortness of breath during mild exertion. Provide a structured symptom analysis, suggesting potential causes, recommended diagnostic steps, and the urgency of consulting a healthcare provider.",
+        "I want to prepare for my first marathon in six months, but I have limited running experience. Generate a comprehensive and personalized six-month training plan including mileage progression, cross-training, injury prevention strategies, nutritional guidelines, and hydration recommendations.",
+        "I’ve been feeling persistently sad, withdrawn from social activities, and unmotivated for over a month. Simulate a confidential mental health consultation."
     ]
 }

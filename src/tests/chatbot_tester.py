@@ -120,14 +120,14 @@ class ChatbotTester:
                     self.chatbot.add_message("user", query)
 
                     start_time = datetime.now()
-                    response, device_used = self.chatbot.router.route_query(self.chatbot.conversation_history)  
+                    response, response_tokens, device_used = self.chatbot.router.route_query(self.chatbot.conversation_history)  
                     end_time = datetime.now()
 
                     print("Response: ", response)
                     self.chatbot.add_message("assistant", response)
 
                     # Record in query log (index corresponds to index in test_queries)
-                    query_log.append([threshold, device_used, start_time, end_time])
+                    query_log.append([threshold, device_used, start_time, end_time, response_tokens])
             
             # Stop the servers
             self.chatbot.router.nano.server_manager.stop_server()
@@ -212,34 +212,31 @@ class ChatbotTester:
 
         query_results = []
 
-        for threshold, device, start_time, end_time in query_log:
+        for threshold, device, start_time, end_time, response_tokens in query_log:
             power_data = nano_power_data if device == "nano" else orin_power_data if device == "orin" else None
 
             # Filter power readings within the query's time range
             relevant_powers = [p for t, p in power_data.items() if start_time <= t <= end_time]
-            # print_powers = [(t,p) for t, p in power_data.items() if start_time <= t <= end_time]
             print('\n relevent powers:', relevant_powers)
-            # print("\nRelevant power readings (timestamp, power):")
-            # for t, p in print_powers:
-            #     print(f"{t}: {p}")
             
             # Based on trapezoidal rule for numerical integration
             energy = sum(relevant_powers)  # mili Joules 
             latency = round((end_time - start_time).total_seconds() * 1000)  # ms
 
-            query_results.append([threshold, device, start_time, end_time, energy, latency])
+            query_results.append([threshold, device, start_time, end_time, energy, latency, response_tokens])
             print("query results:", query_results[-1])
         
         # Calculate total latency and energy for each device at each threshold
         results = {}
 
-        for threshold, device, start_time, end_time, energy, latency in query_results:
+        for threshold, device, start_time, end_time, energy, latency, response_tokens in query_results:
             if threshold not in results:
-                results[threshold] = {"nano": [0, 0, 0], "orin": [0, 0, 0]}  # [latency, energy, avg power]
+                results[threshold] = {"nano": [0, 0, 0, 0], "orin": [0, 0, 0, 0]}  # [latency, energy, avg power, total_tokens_generated]
 
             if device in results[threshold]:
                 results[threshold][device][0] += latency  # Total Latency
                 results[threshold][device][1] += energy   # Total Energy
+                results[threshold][device][3] += response_tokens   # Total Tokens Generated
 
         # Compute Average Power (mW) = Total Energy (mJ) / Total Latency (ms)
         for threshold in results:
@@ -269,16 +266,16 @@ class ChatbotTester:
             # Write header if file is newly created
             if not file_exists:
                 writer.writerow(["Query Set", "Context Threshold",
-                                "Nano Latency (ms)", "Nano Energy (mJ)", "Nano Avg Power (W)"
-                                "Orin Latency (ms)", "Orin Energy (mJ)", "Orin Avg Power (W)"])
+                                "Nano Latency (ms)", "Nano Energy (mJ)", "Nano Avg Power (W)", "Nano Tokens Generated",
+                                "Orin Latency (ms)", "Orin Energy (mJ)", "Orin Avg Power (W)", "Orin Tokens Generated"])
 
             # Write results for each threshold
             for threshold, device_results in results.items():
                 print(f"Results for threshold {threshold}: {device_results}")
                 writer.writerow([
                     query_set_name, threshold,
-                    device_results["nano"][0], device_results["nano"][1], device_results["nano"][2], # Latency, Energy, Avg Power
-                    device_results["orin"][0], device_results["orin"][1], device_results["orin"][2]  
+                    device_results["nano"][0], device_results["nano"][1], device_results["nano"][2], device_results["nano"][3], # Latency, Energy, Avg Power
+                    device_results["orin"][0], device_results["orin"][1], device_results["orin"][2], device_results["orin"][3]
                 ])
 
 
@@ -287,7 +284,7 @@ class ChatbotTester:
             
 # PYTHONPATH=src python3 src/tests/chatbot_tester.py
 if __name__ == "__main__":
-    tester = ChatbotTester(query_sets["general_knowledge"], [2000, 4000], "192.168.1.84", "10.96.184.122")
+    tester = ChatbotTester(query_sets["personal_health"], [4000], "192.168.1.84", "10.96.184.122")
 
     # start logging on both devices
     tester.start_logging("nano")
@@ -308,6 +305,6 @@ if __name__ == "__main__":
 
     results = tester.calculate_energy(query_log, nano_power_data, orin_power_data)
     print("Results: ", results)
-    tester.save_results(results, "general_knowledge")
+    tester.save_results(results, "personal_health")
 
     
